@@ -1,3 +1,5 @@
+from src.agent_orchestrator.api.main import get_workflow_engine
+
 from fastapi import APIRouter, Depends
 from src.agent_orchestrator.api.models import OrchestrationRequest, OrchestrationResponse, AgentResult
 from src.agent_orchestrator.services.huggingface_service import HuggingFaceService
