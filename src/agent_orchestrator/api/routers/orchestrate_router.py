@@ -27,3 +27,37 @@ async def orchestrate(
         results=results,
         elapsed=elapsed
     )
+
+
+
+# 
+
+from fastapi import APIRouter, Depends
+from src.agent_orchestrator.api.models import OrchestrationRequest, OrchestrationResponse
+from src.agent_orchestrator.core.workflow_engine import WorkflowEngine
+
+orchestrate_router = APIRouter()
+
+@orchestrate_router.post("/", response_model=OrchestrationResponse)
+async def orchestrate(
+    req: OrchestrationRequest,
+    engine: WorkflowEngine = Depends(get_workflow_engine)  # DI here!
+):
+    return await engine.run_workflow(req)
+
+
+
+# Inject into route handlers using FastAPI
+
+from fastapi import APIRouter, Depends
+from src.agent_orchestrator.api.models import OrchestrationRequest, OrchestrationResponse
+from src.agent_orchestrator.core.workflow_engine import WorkflowEngine
+
+orchestrate_router = APIRouter()
+
+@orchestrate_router.post("/", response_model=OrchestrationResponse)
+async def orchestrate(
+    req: OrchestrationRequest,
+    engine: WorkflowEngine = Depends(get_workflow_engine)  # <-- Dependency injection!
+):
+    return await engine.run_workflow(req)
