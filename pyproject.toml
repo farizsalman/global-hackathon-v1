@@ -1,0 +1,27 @@
+[project]
+name = "agent-orchestrator"
+version = "0.1.0"
+description = "n8n for AI agents. Agent orchestrator layer with FastAPI, Streamlit, MongoDB"
+authors = [
+    {name = "farizsalman"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "agent-orchestrator"
+version = "0.1.0"
+description = "n8n for AI agents..."
+authors = ["Your Name <your@email.com>"]
+packages = [
+    { include = "agent_orchestrator", from = "src" }
+]
