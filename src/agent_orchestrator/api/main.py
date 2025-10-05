@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from src.agent_orchestrator.api.routers import agent_router, orchestrate_router, health_router
+from src.agent_orchestrator.agents.research_agent import ResearchAgent
+from src.agent_orchestrator.agents.analysis_agent import AnalysisAgent
+from src.agent_orchestrator.agents.decision_agent import DecisionAgent
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Agent Orchestration API")
@@ -33,36 +36,9 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-from src.agent_orchestrator.core.task_router import TaskRouter
-from src.agent_orchestrator.core.agent_manager import AgentManager
-from src.agent_orchestrator.core.workflow_engine import WorkflowEngine
-from src.agent_orchestrator.core.state_manager import StateManager
-
-# Example agent capability mapping (for TaskRouter)
-AGENTS = {
-    "agent1": ["text", "nlp", "classify"],
-    "agent2": ["image", "vision", "detect"],
-}
-
-# Single instances (for simplicity); use for DI
-task_router = TaskRouter(agent_capabilities=AGENTS)
-agent_manager = AgentManager()
-state_manager = StateManager()
-workflow_engine = WorkflowEngine(
-    task_router=task_router,
-    agent_manager=agent_manager,
-    state_manager=state_manager
-)
-
-
 # Dependency functions for FastAPI
 
 from fastapi import Depends
-
-def get_workflow_engine():
-    return workflow_engine
-
-
 
 
 
@@ -73,16 +49,26 @@ from src.agent_orchestrator.core.agent_manager import AgentManager
 from src.agent_orchestrator.core.workflow_engine import WorkflowEngine
 from src.agent_orchestrator.core.state_manager import StateManager
 
-# Example ability config
+
+# AGENTS mapping with proper keys for agents
 AGENTS = {
-    "agent1": ["text", "nlp", "research"],
-    "agent2": ["image", "vision"],
+    "research": ["research", "web", "search", "information"],
+    "analysis": ["analysis", "data", "statistics", "insights"],
+    "decision": ["decision", "recommendation", "synthesis"],
 }
 
 task_router = TaskRouter(agent_capabilities=AGENTS)
 agent_manager = AgentManager()
+agent_manager.registry["research"] = ResearchAgent()
+agent_manager.registry["analysis"] = AnalysisAgent()
+agent_manager.registry["decision"] = DecisionAgent()
 state_manager = StateManager()
-workflow_engine = WorkflowEngine(task_router, agent_manager, state_manager)
+workflow_engine = WorkflowEngine(
+    task_router=task_router,
+    agent_manager=agent_manager,
+    state_manager=state_manager
+)
+
 
 # Create FastAPI dependency functions
 
