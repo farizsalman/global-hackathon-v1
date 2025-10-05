@@ -48,6 +48,9 @@ from src.agent_orchestrator.core.task_router import TaskRouter
 from src.agent_orchestrator.core.agent_manager import AgentManager
 from src.agent_orchestrator.core.workflow_engine import WorkflowEngine
 from src.agent_orchestrator.core.state_manager import StateManager
+from src.agent_orchestrator.db.operations import db_ops
+
+
 
 
 # AGENTS mapping with proper keys for agents
@@ -58,7 +61,7 @@ AGENTS = {
 }
 
 task_router = TaskRouter(agent_capabilities=AGENTS)
-agent_manager = AgentManager()
+agent_manager = AgentManager(db_ops=db_ops)
 agent_manager.registry["research"] = ResearchAgent()
 agent_manager.registry["analysis"] = AnalysisAgent()
 agent_manager.registry["decision"] = DecisionAgent()
@@ -83,3 +86,23 @@ def get_state_manager():
 
 def get_workflow_engine():
     return workflow_engine
+
+
+from src.agent_orchestrator.db.database import connect_to_mongo, close_mongo_connection, init_database
+
+@app.on_event("startup")
+async def startup_event():
+    await connect_to_mongo()
+    await init_database()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_mongo_connection()
+
+# Database dependency
+from src.agent_orchestrator.db.operations import db_ops
+
+def get_database_operations():
+    return db_ops
+
+
